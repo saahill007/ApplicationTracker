@@ -24,28 +24,84 @@ export const mapStatusToKey = (status: string): StatusKeys | undefined => {
      
     }
   };
+  function arrayToCSV(data:application[]) {
+    const headers = Object.keys(data[0]).join(',');
+    const rows = data.map(row => Object.values(row).join(',')).join('\n');
+    return `${headers}\n${rows}`;
+}
+  type StatusCount = {
+    Applied: number;
+    Offered: number;
+    InterviewGiven: number;
+    InterviewScheduled: number;
+    Rejected: number;
+  };
+
+  function downloadCSV(data:application[]) {
+   
+    const csvData = arrayToCSV(data);
+    const blob = new Blob([csvData], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Data.csv'; 
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+}
 function App() {
   useEffect(()=>{
     document.title="Application Tracker";
   },[])
-  let [statusCount,updateStatusCount] = useState({
-    Applied: 2,
-    Offered: 1,
-    InterviewGiven: 1,
-    InterviewScheduled: 1,
-    Rejected: 0,
-  });
+  
+  // let [statusCount,updateStatusCount] = useState({
+  //   Applied: 2,
+  //   Offered: 1,
+  //   InterviewGiven: 1,
+  //   InterviewScheduled: 1,
+  //   Rejected: 0,
+  // });
+
+  let [statusCount, updateStatusCount] = useState<StatusCount>(() => {
+    const localData = localStorage.getItem('statusCount');
+    return localData ? JSON.parse(localData) : {
+      Applied: 2,
+      Offered: 1,
+      InterviewGiven: 1,
+      InterviewScheduled: 1,
+      Rejected: 0,
+    };
+});
   let [showOption,updateShowOption]=useState(0);
   let [isSortedClicked, updateSortedClicked] = useState(false);
   
-  let [applications,updateApplications]=useState<application[]>([
-    {applicationNo: 1, company: "ISS", dateApplied:"01/01/2000", link:"Junior Analyst", status:"Applied"},
-    {applicationNo: 2, company: "Barclays", dateApplied:"02/01/2000", link:"Software Developer", status:"Offered"},
-    {applicationNo: 3, company: "JPMC", dateApplied:"03/01/2010", link:"Product Manager", status:"Interview Given"},
-    {applicationNo: 4, company: "Morgan Stanley", dateApplied:"01/01/2000", link:"Lead Data Analyst", status:"Applied"},
-    {applicationNo: 5, company: "PWC", dateApplied:"09/01/2020", link:"Senior Software Developer", status:"Interview Scheduled"},
-  ]);
+  // let [applications,updateApplications]=useState<application[]>([
+  //   {applicationNo: 1, company: "ISS", dateApplied:"01/01/2000", link:"Junior Analyst", status:"Applied"},
+  //   {applicationNo: 2, company: "Barclays", dateApplied:"02/01/2000", link:"Software Developer", status:"Offered"},
+  //   {applicationNo: 3, company: "JPMC", dateApplied:"03/01/2010", link:"Product Manager", status:"Interview Given"},
+  //   {applicationNo: 4, company: "Morgan Stanley", dateApplied:"01/01/2000", link:"Lead Data Analyst", status:"Applied"},
+  //   {applicationNo: 5, company: "PWC", dateApplied:"09/01/2020", link:"Senior Software Developer", status:"Interview Scheduled"},
+  // ]);
+  let [applications, updateApplications] = useState<application[]>(() => {
+    const localData = localStorage.getItem('applications');
+    return localData ? JSON.parse(localData) : [
+      {applicationNo: 1, company: "ISS", dateApplied:"01/01/2000", link:"Junior Analyst", status:"Applied"},
+      {applicationNo: 2, company: "Barclays", dateApplied:"02/01/2000", link:"Software Developer", status:"Offered"},
+      {applicationNo: 3, company: "JPMC", dateApplied:"03/01/2010", link:"Product Manager", status:"Interview Given"},
+      {applicationNo: 4, company: "Morgan Stanley", dateApplied:"01/01/2000", link:"Lead Data Analyst", status:"Applied"},
+      {applicationNo: 5, company: "PWC", dateApplied:"09/01/2020", link:"Senior Software Developer", status:"Interview Scheduled"},
+    ];
+});
   let [sortedContent,updateSortedContent]=useState<application[]>([...applications]);
+  useEffect(() => {
+    localStorage.setItem('applications', JSON.stringify(applications));
+  }, [applications]);
+  
+  useEffect(() => {
+    localStorage.setItem('statusCount', JSON.stringify(statusCount));
+  }, [statusCount,applications]);
+
   const handleDelete =(id: number)=>{
     // applications.filter(app=>app.applicationNo!=id);
     updateApplications(applications.filter(app=>app.applicationNo!==id));
@@ -112,6 +168,7 @@ function App() {
         <h1>Job Application Tracker</h1>
       </div>
     <AppForm handleApplication={addApplication}></AppForm>
+    {/* <button className="btn btn-primary" onClick={()=>downloadCSV(applications)}>Download CSV</button> */}
     <div className="tiles">
       <SmallTile heading='Applied' num={statusCount.Applied} onButtonClick={onButtonClick}/>
       <SmallTile heading="Interview's Scheduled" num={statusCount.InterviewScheduled}onButtonClick={onButtonClick}/>
@@ -123,7 +180,7 @@ function App() {
     </button>
     </div>
     
-    <Table handleSubmit={(app:application,newStatus:string)=>{
+    <Table download={()=>downloadCSV(applications)} handleSubmit={(app:application,newStatus:string)=>{
       updateShowOption(0);
       updateApplications(applications.map(a=>a.applicationNo===app.applicationNo?{...a,status:app.status}:a));
       const updatedApp = applications.filter(a=>a.applicationNo===app.applicationNo);

@@ -1,7 +1,8 @@
 import { MdDeleteOutline } from 'react-icons/Md';
 import { BiEdit } from 'react-icons/Bi';
-import { useEffect, useRef } from 'react';
+import {  useRef } from 'react';
 import { status } from '../App';
+import { BsDownload } from 'react-icons/Bs';
 
 export interface application{
     applicationNo: number;
@@ -18,9 +19,10 @@ interface Props{
     handleEdit: (id:number)=>void;
     showOption: number;
     handleSubmit: (app:application,earlierStatus: string)=>void;
+    download: ()=>void;
 }
 
-function Table({applications,handleDelete, handleEdit, showOption,handleSubmit}: Props) {
+function Table({applications,handleDelete, handleEdit, showOption,handleSubmit,download}: Props) {
     let optionRef = useRef<HTMLSelectElement>(null);
     
   return (
@@ -34,7 +36,7 @@ function Table({applications,handleDelete, handleEdit, showOption,handleSubmit}:
       <th scope="col">Position</th>
       <th scope="col">Delete</th>
       <th scope="col">Edit Status </th>
-      <th scope="col">Status</th>
+      <th scope="col">Status  <a  className="btn btnsecondary download-btn" onClick={download}><BsDownload/> </a></th>
     </tr>
   </thead>
   <tbody>

@@ -12,7 +12,7 @@ function SmallTile({num,heading,onButtonClick}:Props) {
     <button className="tile" onClick={()=>onButtonClick(heading)}>
         <h1>{num}</h1>
     
-        <p>Total {heading}</p>
+        <p>{heading}</p>
  
     </button>
     </>

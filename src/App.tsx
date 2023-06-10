@@ -96,11 +96,11 @@ function App() {
   let [sortedContent,updateSortedContent]=useState<application[]>([...applications]);
   useEffect(() => {
     localStorage.setItem('applications', JSON.stringify(applications));
-  }, [applications]);
+  }, [applications,sortedContent]);
   
   useEffect(() => {
     localStorage.setItem('statusCount', JSON.stringify(statusCount));
-  }, [statusCount,applications]);
+  }, [statusCount,applications,sortedContent]);
 
   const handleDelete =(id: number)=>{
     // applications.filter(app=>app.applicationNo!=id);
@@ -180,7 +180,7 @@ function App() {
     </button>
     </div>
     
-    <Table download={()=>downloadCSV(applications)} handleSubmit={(app:application,newStatus:string)=>{
+    <Table onButtonClick={onButtonClick} download={()=>downloadCSV(applications)} handleSubmit={(app:application,newStatus:string)=>{
       updateShowOption(0);
       updateApplications(applications.map(a=>a.applicationNo===app.applicationNo?{...a,status:app.status}:a));
       const updatedApp = applications.filter(a=>a.applicationNo===app.applicationNo);

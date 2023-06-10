@@ -3,6 +3,7 @@ import { BiEdit } from 'react-icons/Bi';
 import {  useRef } from 'react';
 import { status } from '../App';
 import { BsDownload } from 'react-icons/Bs';
+import LabelStatus from './LabelStatus';
 
 export interface application{
     applicationNo: number;
@@ -20,9 +21,10 @@ interface Props{
     showOption: number;
     handleSubmit: (app:application,earlierStatus: string)=>void;
     download: ()=>void;
+    onButtonClick:(header: string)=>void;
 }
 
-function Table({applications,handleDelete, handleEdit, showOption,handleSubmit,download}: Props) {
+function Table({applications,handleDelete, handleEdit, showOption,handleSubmit,download,onButtonClick}: Props) {
     let optionRef = useRef<HTMLSelectElement>(null);
     
   return (
@@ -72,7 +74,7 @@ function Table({applications,handleDelete, handleEdit, showOption,handleSubmit,d
                 {status.map(s=><option>{s}</option>)}
                 
             </select>
-        </> :application.status}</td>
+        </> :<LabelStatus onButtonClick={()=>onButtonClick(application.status)} key={application.applicationNo}label={application.status}></LabelStatus> }</td>
       </tr>
     )
     )}

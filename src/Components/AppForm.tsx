@@ -16,7 +16,7 @@ function getCurrentDate(): string {
     return month + "/" + day + "/" + year;
   }
 
-  
+
 function AppForm({handleApplication}:Props) {
 
 let companyRef = useRef<HTMLInputElement>(null);
@@ -75,7 +75,7 @@ const handleForm =(event:FormEvent)=>{
     </select>
   </div>
  
-  <button type="submit" className="btn btn-primary fg" style={{ display: 'block', background:'#607580', marginLeft: 'auto', marginRight: 'auto', border: 'None' }}>SUBMIT</button>
+  <button type="submit" className="btn btn-primary fg" style={{ display: 'block', background:'#33665e', marginLeft: 'auto', marginRight: 'auto', border: 'None' }}>SUBMIT</button>
 </form>
     </>
   )
